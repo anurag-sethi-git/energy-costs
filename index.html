@@ -17,10 +17,6 @@
   .val.grand { background: #222; color: #fff; }
   .val .n { font-size: 22px; font-weight: 700; }
   .val .l { font-size: 12px; opacity: .8; }
-  #acctPicker { margin: 16px 0 0; }
-  #acctPicker label { display: block; font-size: 12px; color: #666; margin-bottom: 4px; }
-  #acctPicker select { font: inherit; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; max-width: 100%; }
-  [hidden] { display: none !important; }
   .pat { max-width: 1000px; }
   .pat h3 { font-size: 16px; margin: 24px 0 8px; }
   .pat h3 span { font-size: 12px; font-weight: 400; color: #666; margin-left: 6px; }
@@ -44,15 +40,8 @@
 </head>
 <body>
 <h1>Energy cost: Dec 2025 &ndash; Nov 2026</h1>
-<p class="note">Estimated, inc. VAT. <span id="acctRef"></span>Nov 2026 covers 1&ndash;9 Nov only. Totals cover the full period shown in the charts.</p>
+<p class="note">Estimated, inc. VAT. 175NR. Nov 2026 covers 1&ndash;9 Nov only. Totals cover the full period shown in the charts.</p>
 
-<div id="acctPicker" hidden>
-  <label for="acctSelect">Account</label>
-  <select id="acctSelect"></select>
-</div>
-<p class="note" id="emptyMsg" hidden>This account has no electricity or gas meters, so there is no usage to show.</p>
-
-<div id="content">
 <h2>Electricity</h2>
 <div class="totals" id="elecTotals"></div>
 <p class="note">Off-peak = cheap overnight rate (&lt;15p/kWh, 23:30&ndash;05:30); peak = all other half-hours.</p>
@@ -99,7 +88,6 @@
     <li><b>Costliest week (starting):</b> 29 Dec (&pound;65.72).</li>
     <li><b>Watch:</b> the 05:00&ndash;09:00 and 17:00&ndash;20:00 heating windows from November to March.</li>
   </ul>
-</div>
 </div>
 
 <script>
@@ -155,13 +143,9 @@ function totals(containerId, rows) {
     <div class="val grand"><div class="n">${gbp(standing + unit)}</div><div class="l">Total</div></div></div>`;
   document.getElementById(containerId).replaceChildren(div);
 }
-const accounts = [
-  { number: "A-2BCE2E6C", address: "No property linked", ref: "", elec: null, gas: null, gasYear: null },
-  { number: "A-6990BA47", address: "175 Northumberland Road", ref: "175NR. ", elec: elecData, gas: gasData,
-    // Last 365 days (10 Nov 2025 - 9 Nov 2026) of gas use and cost at current rates
-    gasYear: { kwh: 17770, standing: 118.11, unit: 978.32 } },
-];
-let current = accounts.find(a => a.elec) || accounts[0];
+const gasYear = { kwh: 17770, standing: 118.11, unit: 978.32 }; // last 365 days (10 Nov 2025 - 9 Nov 2026) at current rates
+totals("elecTotals", elecData);
+totals("gasTotals", gasData);
 
 function chart(id, data, series, step) {
   const svg = document.getElementById(id);
@@ -221,10 +205,10 @@ function chart(id, data, series, step) {
   });
 }
 function drawCharts() {
-  if (!current.elec) return;
-  chart("elec", current.elec, elecSeries, 20);
-  chart("gas", current.gas, gasSeries, 20);
+  chart("elec", elecData, elecSeries, 20);
+  chart("gas", gasData, gasSeries, 20);
 }
+drawCharts();
 let lastW = window.innerWidth;
 window.addEventListener("resize", () => {
   if (window.innerWidth !== lastW) { lastW = window.innerWidth; drawCharts(); }
@@ -246,28 +230,7 @@ function renderForecast(gasYear) {
     `Your own standing charge alone would add about ${(gasYear.standing / gasYear.kwh * 100).toFixed(2)}p/kWh, which would be cost-neutral.`;
 }
 
-function showAccount(acct) {
-  current = acct;
-  const hasData = !!acct.elec;
-  document.getElementById("content").hidden = !hasData;
-  document.getElementById("emptyMsg").hidden = hasData;
-  document.getElementById("acctRef").textContent = acct.ref;
-  if (!hasData) return;
-  totals("elecTotals", acct.elec);
-  totals("gasTotals", acct.gas);
-  renderForecast(acct.gasYear);
-  drawCharts();
-}
-
-// The picker only appears when the user has more than one account
-if (accounts.length > 1) {
-  const sel = document.getElementById("acctSelect");
-  accounts.forEach((a, i) => sel.add(new Option(`${a.number} \u2013 ${a.address}`, i)));
-  sel.value = accounts.indexOf(current);
-  sel.addEventListener("change", () => showAccount(accounts[sel.value]));
-  document.getElementById("acctPicker").hidden = false;
-}
-showAccount(current);
+renderForecast(gasYear);
 </script>
 </body>
 </html>
