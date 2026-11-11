@@ -17,6 +17,16 @@
   .val.grand { background: #222; color: #fff; }
   .val .n { font-size: 22px; font-weight: 700; }
   .val .l { font-size: 12px; opacity: .8; }
+  #acctPicker { margin: 16px 0 0; }
+  #acctPicker label { display: block; font-size: 12px; color: #666; margin-bottom: 4px; }
+  #acctPicker select { font: inherit; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; max-width: 100%; }
+  [hidden] { display: none !important; }
+  .pat { max-width: 1000px; }
+  .pat h3 { font-size: 16px; margin: 24px 0 8px; }
+  .pat h3 span { font-size: 12px; font-weight: 400; color: #666; margin-left: 6px; }
+  .pat .vals { max-width: 520px; }
+  .pat ul { padding-left: 20px; margin: 12px 0; font-size: 14px; line-height: 1.5; }
+  .pat li { margin-bottom: 6px; }
   svg { display: block; width: 100%; max-width: 1100px; }
   svg text { font-family: inherit; }
   @media (max-width: 640px) {
@@ -34,8 +44,15 @@
 </head>
 <body>
 <h1>Energy cost: Dec 2025 &ndash; Nov 2026</h1>
-<p class="note">Estimated, inc. VAT. 175NR. Nov 2026 covers 1&ndash;9 Nov only. Totals cover the full period shown in the charts.</p>
+<p class="note">Estimated, inc. VAT. <span id="acctRef"></span>Nov 2026 covers 1&ndash;9 Nov only. Totals cover the full period shown in the charts.</p>
 
+<div id="acctPicker" hidden>
+  <label for="acctSelect">Account</label>
+  <select id="acctSelect"></select>
+</div>
+<p class="note" id="emptyMsg" hidden>This account has no electricity or gas meters, so there is no usage to show.</p>
+
+<div id="content">
 <h2>Electricity</h2>
 <div class="totals" id="elecTotals"></div>
 <p class="note">Off-peak = cheap overnight rate (&lt;15p/kWh, 23:30&ndash;05:30); peak = all other half-hours.</p>
@@ -49,6 +66,41 @@
 <h2>Gas forecast: standing charge removed</h2>
 <div class="totals" id="gasForecast"></div>
 <p class="note" id="gasForecastNote"></p>
+
+<h2>Usage Pattern</h2>
+<p class="note">Based on half-hourly readings, 10 Nov 2025 &ndash; 9 Nov 2026 (UK local time). Costs are the unit charge only (inc. VAT), priced per half-hour with the actual off-peak and peak rates. The standing charge is a flat daily fee (about &pound;169 a year electricity, &pound;118 gas), so it can&rsquo;t be reduced by changing when you use energy. Rates before 9 Dec 2025 were approximated (about &pound;3 out in total).</p>
+
+<div class="pat">
+  <h3>Electricity <span>unit charge &pound;1,313 a year</span></h3>
+  <div class="vals">
+    <div class="val"><div class="n">&pound;214</div><div class="l">Off-peak (3,535 kWh) &ndash; 16%</div></div>
+    <div class="val grand"><div class="n">&pound;1,099</div><div class="l">Peak (3,569 kWh) &ndash; 84%</div></div>
+  </div>
+  <ul>
+    <li><b>Biggest lever:</b> peak-rate usage. A kWh costs about 37p at peak and 8p off-peak, so move anything avoidable into 23:30&ndash;05:30.</li>
+    <li><b>Hours:</b> the costliest are 23:00 (&pound;100 over the year, as its first half-hour is still peak rate), 22:00 (&pound;84), 21:00 (&pound;79), then 09:00&ndash;13:00 (&pound;62&ndash;75 each). Midnight to 04:00 is cheapest at &pound;28&ndash;42 per hour, despite using the most kWh.</li>
+    <li><b>Days:</b> Friday is highest (&pound;4.42 a day), Tuesday lowest (&pound;3.08). Weekends average &pound;3.84 against &pound;3.50 on weekdays.</li>
+    <li><b>Months:</b> April (&pound;5.48 a day), June (&pound;5.04) and May (&pound;4.46) cost most; July and August are lowest (about &pound;2.10&ndash;2.20 a day).</li>
+    <li><b>Costliest days:</b> about 7 Dec (&pound;13.63), 14 Apr (&pound;13.42), 19 Apr (&pound;13.22), 22 Jun (&pound;12.97).</li>
+    <li><b>Costliest weeks (starting):</b> 13 Apr (&pound;48.57), 22 Jun (&pound;45.12), 20 Apr (&pound;43.25).</li>
+    <li><b>Day of month:</b> no real pattern.</li>
+  </ul>
+
+  <h3>Gas <span>unit charge &pound;978 a year</span></h3>
+  <div class="vals">
+    <div class="val"><div class="n">&pound;333</div><div class="l">05:00&ndash;09:59 &ndash; 34%</div></div>
+    <div class="val"><div class="n">&pound;239</div><div class="l">17:00&ndash;19:59 &ndash; 24%</div></div>
+  </div>
+  <ul>
+    <li><b>Hours:</b> usage clusters in the morning and early evening. The single biggest hour is 06:00 (&pound;90). Overnight is close to &pound;0.</li>
+    <li><b>Days:</b> Saturday is highest (&pound;3.23 a day), then Friday and Sunday (&pound;3.03). Tuesday is lowest (&pound;2.06). This is partly weather-driven.</li>
+    <li><b>Months:</b> January (&pound;6.30 a day) and December (&pound;6.21) are highest; July and August are about &pound;0.20&ndash;0.26 a day.</li>
+    <li><b>Costliest days:</b> 9 Jan (&pound;11.72), 5 Dec (&pound;11.63), 31 Dec (&pound;11.02).</li>
+    <li><b>Costliest week (starting):</b> 29 Dec (&pound;65.72).</li>
+    <li><b>Watch:</b> the 05:00&ndash;09:00 and 17:00&ndash;20:00 heating windows from November to March.</li>
+  </ul>
+</div>
+</div>
 
 <script>
 // month, standing £, then unit £ (electricity: off-peak, peak; gas: unit)
@@ -101,15 +153,20 @@ function totals(containerId, rows) {
     <div class="val"><div class="n">${gbp(standing)}</div><div class="l">Standing charge</div></div>
     <div class="val"><div class="n">${gbp(unit)}</div><div class="l">Unit charge</div></div>
     <div class="val grand"><div class="n">${gbp(standing + unit)}</div><div class="l">Total</div></div></div>`;
-  document.getElementById(containerId).appendChild(div);
+  document.getElementById(containerId).replaceChildren(div);
 }
-totals("elecTotals", elecData);
-totals("gasTotals", gasData);
+const accounts = [
+  { number: "A-2BCE2E6C", address: "No property linked", ref: "", elec: null, gas: null, gasYear: null },
+  { number: "A-6990BA47", address: "175 Northumberland Road", ref: "175NR. ", elec: elecData, gas: gasData,
+    // Last 365 days (10 Nov 2025 - 9 Nov 2026) of gas use and cost at current rates
+    gasYear: { kwh: 17770, standing: 118.11, unit: 978.32 } },
+];
+let current = accounts.find(a => a.elec) || accounts[0];
 
 function chart(id, data, series, step) {
   const svg = document.getElementById(id);
   const W = Math.max(300, Math.min(1100, svg.parentElement.clientWidth));
-  const narrow = W < 640;
+  const narrow = W < 780;
   const legendH = narrow ? series.length * 18 + 8 : 40;
   const H = narrow ? 400 + legendH : 620;
   const m = narrow ? { l: 44, r: 8, t: 22, b: 62 + legendH } : { l: 80, r: 30, t: 30, b: 130 };
@@ -164,30 +221,53 @@ function chart(id, data, series, step) {
   });
 }
 function drawCharts() {
-  chart("elec", elecData, elecSeries, 20);
-  chart("gas", gasData, gasSeries, 20);
+  if (!current.elec) return;
+  chart("elec", current.elec, elecSeries, 20);
+  chart("gas", current.gas, gasSeries, 20);
 }
-drawCharts();
 let lastW = window.innerWidth;
 window.addEventListener("resize", () => {
   if (window.innerWidth !== lastW) { lastW = window.innerWidth; drawCharts(); }
 });
 
-// Last 365 days (10 Nov 2025 - 9 Nov 2026) of gas use and cost at current rates
-const gasYear = { kwh: 17770, standing: 118.11, unit: 978.32 };
 const upliftP = 0.94; // Uswitch estimate: average standing charge moved into the unit rate
-const withSc = gasYear.standing + gasYear.unit;
-const noSc = gasYear.unit + gasYear.kwh * upliftP / 100;
-const fc = document.createElement("div");
-fc.className = "panel";
-fc.innerHTML = `<div class="vals">
-  <div class="val"><div class="n">${gbp(withSc)}</div><div class="l">Current yearly cost<br>(with standing charge)</div></div>
-  <div class="val grand"><div class="n">${gbp(noSc)}</div><div class="l">Forecast yearly cost<br>(standing charge removed)</div></div>
-  <div class="val"><div class="n">${noSc >= withSc ? "+" : "-"}${gbp(Math.abs(noSc - withSc))}</div><div class="l">${noSc >= withSc ? "Worse off" : "Better off"} per year</div></div></div>`;
-document.getElementById("gasForecast").appendChild(fc);
-document.getElementById("gasForecastNote").textContent =
-  `Based on your last 365 days: ${gasYear.kwh.toLocaleString("en-GB")} kWh. The standing charge is removed and the unit rate rises by ${upliftP}p/kWh (Uswitch estimate for the average household; no official figure has been published). ` +
-  `Your own standing charge alone would add about ${(gasYear.standing / gasYear.kwh * 100).toFixed(2)}p/kWh, which would be cost-neutral.`;
+function renderForecast(gasYear) {
+  const withSc = gasYear.standing + gasYear.unit;
+  const noSc = gasYear.unit + gasYear.kwh * upliftP / 100;
+  const fc = document.createElement("div");
+  fc.className = "panel";
+  fc.innerHTML = `<div class="vals">
+    <div class="val"><div class="n">${gbp(withSc)}</div><div class="l">Current yearly cost<br>(with standing charge)</div></div>
+    <div class="val grand"><div class="n">${gbp(noSc)}</div><div class="l">Forecast yearly cost<br>(standing charge removed)</div></div>
+    <div class="val"><div class="n">${noSc >= withSc ? "+" : "-"}${gbp(Math.abs(noSc - withSc))}</div><div class="l">${noSc >= withSc ? "Worse off" : "Better off"} per year</div></div></div>`;
+  document.getElementById("gasForecast").replaceChildren(fc);
+  document.getElementById("gasForecastNote").textContent =
+    `Based on your last 365 days: ${gasYear.kwh.toLocaleString("en-GB")} kWh. The standing charge is removed and the unit rate rises by ${upliftP}p/kWh (Uswitch estimate for the average household; no official figure has been published). ` +
+    `Your own standing charge alone would add about ${(gasYear.standing / gasYear.kwh * 100).toFixed(2)}p/kWh, which would be cost-neutral.`;
+}
+
+function showAccount(acct) {
+  current = acct;
+  const hasData = !!acct.elec;
+  document.getElementById("content").hidden = !hasData;
+  document.getElementById("emptyMsg").hidden = hasData;
+  document.getElementById("acctRef").textContent = acct.ref;
+  if (!hasData) return;
+  totals("elecTotals", acct.elec);
+  totals("gasTotals", acct.gas);
+  renderForecast(acct.gasYear);
+  drawCharts();
+}
+
+// The picker only appears when the user has more than one account
+if (accounts.length > 1) {
+  const sel = document.getElementById("acctSelect");
+  accounts.forEach((a, i) => sel.add(new Option(`${a.number} \u2013 ${a.address}`, i)));
+  sel.value = accounts.indexOf(current);
+  sel.addEventListener("change", () => showAccount(accounts[sel.value]));
+  document.getElementById("acctPicker").hidden = false;
+}
+showAccount(current);
 </script>
 </body>
 </html>
